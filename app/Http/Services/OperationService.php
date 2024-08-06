@@ -35,8 +35,7 @@ class OperationService
                 $freeWithdraw = 3;
                 $weeklyAmount = 1000;
 
-                $weeklyData = Operation::
-                where('user_id', $operation->user_id)
+                $weeklyData = Operation::where('user_id', $operation->user_id)
                     ->where('operation_date', '>=', date('Y-m-d', strtotime('last monday')))
                     ->where('operation_date', '<=', date('Y-m-d'))
                     ->where('operation_type', 'withdraw')

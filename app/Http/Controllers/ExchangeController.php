@@ -38,6 +38,10 @@ class ExchangeController extends Controller
                    continue;
                }
 
+               if (!in_array($line[5], ['USD', 'EUR', 'JPY'])) {
+                  continue;
+               }
+
                $this->operationService->operationStore($line);
 
            }
