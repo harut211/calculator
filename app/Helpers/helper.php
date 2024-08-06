@@ -17,21 +17,21 @@ function checkWeeklyData($weeklyData)
     }
     $data = [
         'money' => $money,
-        'count' =>  $count
+        'count' => $count
     ];
     return $data;
 }
 
 
-function convertCurrency($amount,$currency)
+function convertCurrency($amount, $currency)
 {
     $money = 0;
-     if ($currency === 'USD') {
-         $money = $amount;
-     } elseif ($currency === 'EUR') {
-         $money = $amount / config('currency.EUR');
-     } elseif ($currency === 'JPY') {
-         $money = $amount / config('currency.JPY');
-     }
-     return number_format($money, 2, '.', '');
+    if ($currency === 'USD') {
+        $money = $amount;
+    } elseif ($currency === 'EUR') {
+        $money = $amount / config('currency.EUR');
+    } elseif ($currency === 'JPY') {
+        $money = $amount / config('currency.JPY');
+    }
+    return number_format($money, 2, '.', '');
 }

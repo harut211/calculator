@@ -41,9 +41,9 @@ class OperationService
                     ->where('operation_type', 'withdraw')
                     ->get();
 
-               $weeklyInfo =  checkWeeklyData($weeklyData);
+                $weeklyInfo = checkWeeklyData($weeklyData);
 
-                if ( $weeklyInfo['count'] < $freeWithdraw &&  $weeklyInfo['money'] < $weeklyAmount) {
+                if ($weeklyInfo['count'] < $freeWithdraw && $weeklyInfo['money'] < $weeklyAmount) {
                     $commission = 0;
                 } else {
                     $commission = $operation->amount * 0.003;

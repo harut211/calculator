@@ -9,7 +9,7 @@ use League\Csv\Reader;
 
 class ExchangeController extends Controller
 {
-    public  $operationService;
+    public $operationService;
 
     public function __construct(OperationService $operationService)
     {
@@ -24,33 +24,33 @@ class ExchangeController extends Controller
     }
 
 
-   public function index(Request $request)
-   {
+    public function index(Request $request)
+    {
 
-       $filename = storage_path('app/public/'.$request->input('fileName'));
+        $filename = storage_path('app/public/' . $request->input('fileName'));
 
-       $csv =  Reader::createFromPath($filename);
+        $csv = Reader::createFromPath($filename);
 
-       if (file_exists($filename)) {
-           foreach ($csv as $line) {
+        if (file_exists($filename)) {
+            foreach ($csv as $line) {
 
-               if (empty($line)) {
-                   continue;
-               }
+                if (empty($line)) {
+                    continue;
+                }
 
-               if (!in_array($line[5], ['USD', 'EUR', 'JPY'])) {
-                  continue;
-               }
+                if (!in_array($line[5], ['USD', 'EUR', 'JPY'])) {
+                    continue;
+                }
 
-               $this->operationService->operationStore($line);
+                $this->operationService->operationStore($line);
 
-           }
+            }
 
-           return redirect()->route('show');
-       } else {
-           return back()->with(['error' => 'Csv file not found']);
-       }
+            return redirect()->route('show');
+        } else {
+            return back()->with(['error' => 'Csv file not found']);
+        }
 
-   }
+    }
 
 }
