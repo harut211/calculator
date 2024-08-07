@@ -37,19 +37,16 @@ class ExchangeController extends Controller
                 if (empty($line)) {
                     continue;
                 }
-
                 if (!in_array($line[5], ['USD', 'EUR', 'JPY'])) {
                     continue;
                 }
-
                 $this->operationService->operationStore($line);
-
             }
-
             return redirect()->route('show');
         } else {
             return back()->with(['error' => 'Csv file not found']);
         }
+
 
     }
 

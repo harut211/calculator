@@ -14,7 +14,7 @@
            </div>
            <div class="p-6 text-gray-900 dark:text-gray-100">
                @if(!empty(session('success')))
-                   <div class="alert alert-success">{{session('success')}}</div>
+                   <div class="alert alert-danger">{{session('success')}}</div>
                @endif
            </div>
            <div class="card">
@@ -24,7 +24,9 @@
                    @endif
                    <form action="{{route('upload')}}" method="post"  enctype="multipart/form-data">
                        <input type="file" accept=".csv" name="file">
-                       <button>upload</button>
+                       <p><img src="{{ url('/captcha') }}" alt="Captcha"></p>
+                       <input type="text" name="captcha" placeholder="Enter the captcha code" required><br>
+                       <button class="btn btn-success">upload</button>
                    </form>
                </div>
            </div>

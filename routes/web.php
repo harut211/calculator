@@ -20,6 +20,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/private',[\App\Http\Controllers\ExchangeController::class, 'index'])->name('private');
     Route::get('/show/',[\App\Http\Controllers\ExchangeController::class, 'show'])->name('show');
     Route::post('/upload',[\App\Http\Controllers\FileUploadController::class,'upload'])->name('upload');
+
+    Route::get('/captcha', [\App\Http\Controllers\FileUploadController::class, 'show'])->name('captcha');
+    Route::post('verify-captcha', [\App\Http\Controllers\CaptchaController::class, 'verify'])->name('verify-captcha');
 });
 
 require __DIR__.'/auth.php';
