@@ -23,6 +23,7 @@ class FileUploadRequest extends FormRequest
     {
         return [
             'file' => 'required|file|max:2048',
+            'captcha' => 'required|string'
         ];
     }
     public function messages(): array
@@ -30,6 +31,8 @@ class FileUploadRequest extends FormRequest
         return [
             'file.required' => 'File is required',
             'file.mimes' => 'File must be type of csv',
+            'captcha.required' => 'Captcha is required',
+            'captcha.string' => 'Captcha must be type of string'
         ];
     }
 }
