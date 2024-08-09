@@ -6,12 +6,14 @@ function checkWeeklyData($weeklyData)
     $money = 0;
     $count = 0;
     foreach ($weeklyData as $data) {
-        if ($data->currency === 'USD') {
-            $money += $data->amount;
-        } elseif ($data->currency === 'EUR') {
-            $money += $data->amount / config('currency.EUR');
+
+        if ($data['currency'] === 'USD') {
+            $money += $data['amount'];
+
+        } elseif ($data['currency'] === 'EUR') {
+            $money += $data['amount'] / config('currency.EUR');
         } else {
-            $money += $data->amount / config('currency.JPY');
+            $money += $data['amount'] / config('currency.JPY');
         }
         $count += 1;
     }
@@ -20,6 +22,25 @@ function checkWeeklyData($weeklyData)
         'count' => $count
     ];
     return $data;
+}
+
+function checkData($data){
+    $money = 0;
+    $count = 0;
+    if ($data['currency'] === 'USD') {
+        $money += $data['amount'];
+
+    } elseif ($data['currency'] === 'EUR') {
+        $money += $data['amount'] / config('currency.EUR');
+    } else {
+        $money += $data['amount'] / config('currency.JPY');
+    }
+
+$data = [
+    'money' => $money,
+    'count' => $count
+];
+return $data;
 }
 
 

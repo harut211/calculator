@@ -6,11 +6,12 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "ext-gd": "*",
         "anhskohbo/no-captcha": "^3.6",
         "laravel/framework": "^11.9",
+        "laravel/prompts": "^0.1.24",
         "laravel/tinker": "^2.9",
-        "league/csv": "^9.16",
-        "ext-gd": "*"
+        "league/csv": "^9.16"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

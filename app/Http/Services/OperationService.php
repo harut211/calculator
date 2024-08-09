@@ -3,58 +3,101 @@
 namespace App\Http\Services;
 
 
-use App\Models\Operation;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class OperationService
 {
 
-    public function operationStore($line)
+
+    protected $operations;
+    protected $freeLimit = 1000.00;
+    protected $privateCommission = 0.003;
+    protected $businessCommission = 0.005;
+    protected $depositCommission = 0.0003;
+
+    protected $conversionRates = [
+        'JPY' => 0.0062,
+        'USD' => 0.9200,
+        'EUR' => 1.0000,
+    ];
+
+    public function __construct(Collection $operations)
     {
-        $operation = Operation::updateOrCreate([
-            'operation_date' => $line[0],
-            'user_id' => $line[1],
-            'user_type' => $line[2],
-            'operation_type' => $line[3],
-            'amount' => (float)$line[4],
-            'currency' => $line[5],
-        ]);
-        $commission = $this->calculateCommission($operation);
-        $operation->commission_fee = $commission;
-        $operation->save();
-        return true;
+        $this->operations = $operations;
     }
 
-    public function calculateCommission(Operation $operation)
+    public function calculate()
     {
-        $commission = 0;
+        $commissionFees = [];
+        $groupedByWeek = $this->operations->groupBy(function ($operation) {
+            return Carbon::parse($operation['date'])->startOfWeek()->format('Y-W');
+        });
 
-        if ($operation->operation_type === 'deposit') {
-            $commission = $operation->amount * 0.0003;
-        } else {
-            if ($operation->user_type === 'private') {
-                $freeWithdraw = 3;
-                $weeklyAmount = 1000;
+        foreach ($groupedByWeek as $operations) {
+            $weeklyTotals = [];
+            $operationCounts = [];
 
-                $weeklyData = Operation::where('user_id', $operation->user_id)
-                    ->where('operation_date', '>=', date('Y-m-d', strtotime('last monday')))
-                    ->where('operation_date', '<=', date('Y-m-d'))
-                    ->where('operation_type', 'withdraw')
-                    ->get();
+            foreach ($operations as $operation) {
+                $userId = $operation['user_id'];
+                $operationAmount = (float)$operation['amount'];
+                $currency = $operation['currency'];
+                $commission = 0;
 
-                $weeklyInfo = checkWeeklyData($weeklyData);
+                $amountInEur = $this->convertToEur($operationAmount, $currency);
 
-                if ($weeklyInfo['count'] < $freeWithdraw && $weeklyInfo['money'] < $weeklyAmount) {
-                    $commission = 0;
-                } else {
-                    $commission = $operation->amount * 0.003;
+                if ($operation['operation_type'] === 'deposit') {
+                    $commission = $this->calculateCommission($amountInEur, $this->depositCommission);
+                } else if ($operation['user_type'] === 'private') {
+                    if (!isset($weeklyTotals[$userId])) {
+                        $weeklyTotals[$userId] = 0;
+                        $operationCounts[$userId] = 0;
+                    }
+                    if ($operation['operation_type'] === 'withdraw') {
+                        if ($operationCounts[$userId] < 3) {
+                            if ($weeklyTotals[$userId] + $amountInEur <= $this->freeLimit) {
+                                $commission = 0;
+                            } else {
+                                $usedAmount = $weeklyTotals[$userId] + $amountInEur - $this->freeLimit;
+                                $commission = $this->calculateCommission($usedAmount, $this->privateCommission);
+                            }
+                        } else {
+                            $commission = $this->calculateCommission($amountInEur, $this->privateCommission);
+                        }
+                        $weeklyTotals[$userId] += $amountInEur;
+                        $operationCounts[$userId]++;
+                    }
+                } else if ($operation['user_type'] === 'business') {
+                    if ($operation['operation_type'] === 'withdraw') {
+                        $commission = $this->calculateCommission($amountInEur, $this->businessCommission);
+                    }
                 }
-
-            } else {
-                $commission = $operation->amount * 0.005;
+                $commissionFees[] = [
+                    'date' => $operation['date'],
+                    'user_id' => $operation['user_id'],
+                    'operation_type' => $operation['operation_type'],
+                    'amount' => $operationAmount,
+                    'currency' => $currency,
+                    'commission' => $commission
+                ];
             }
         }
-        return number_format($commission, 2, '.', '');
+        return $commissionFees;
+    }
 
+    protected function calculateCommission($amount, $rate)
+    {
+        $commission = $amount * $rate;
+
+        $commission = round($commission, 2);
+
+        return $commission;
+    }
+
+    protected function convertToEur($amount, $currency)
+    {
+        $rate = $this->conversionRates[$currency] ?? 1;
+        return $amount * $rate;
     }
 
 }
