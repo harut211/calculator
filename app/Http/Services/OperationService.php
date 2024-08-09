@@ -27,7 +27,7 @@ class OperationService
         $this->operations = $operations;
     }
 
-    public function calculate()
+    public function calculate(): array
     {
         $commissionFees = [];
         $groupedByWeek = $this->operations->groupBy(function ($operation) {
@@ -85,7 +85,7 @@ class OperationService
         return $commissionFees;
     }
 
-    protected function calculateCommission($amount, $rate)
+    protected function calculateCommission($amount, $rate): float
     {
         $commission = $amount * $rate;
 
@@ -94,7 +94,7 @@ class OperationService
         return $commission;
     }
 
-    protected function convertToEur($amount, $currency)
+    protected function convertToEur($amount, $currency): float
     {
         $rate = $this->conversionRates[$currency] ?? 1;
         return $amount * $rate;
