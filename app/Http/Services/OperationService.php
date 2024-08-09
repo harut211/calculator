@@ -15,13 +15,11 @@ class OperationService
     protected $privateCommission = 0.003;
     protected $businessCommission = 0.005;
     protected $depositCommission = 0.0003;
-
     protected $conversionRates = [
         'JPY' => 0.0062,
         'USD' => 0.9200,
         'EUR' => 1.0000,
     ];
-
     public function __construct(Collection $operations)
     {
         $this->operations = $operations;
@@ -85,9 +83,9 @@ class OperationService
         return $commissionFees;
     }
 
-    protected function calculateCommission($amount, $rate): float
+    protected function calculateCommission($amount, $percent): float
     {
-        $commission = $amount * $rate;
+        $commission = $amount * $percent;
 
         $commission = round($commission, 2);
 
@@ -99,6 +97,5 @@ class OperationService
         $rate = $this->conversionRates[$currency] ?? 1;
         return $amount * $rate;
     }
-
 }
 
