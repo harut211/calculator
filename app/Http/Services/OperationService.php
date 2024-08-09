@@ -54,7 +54,7 @@ class OperationService
                         $operationCounts[$userId] = 0;
                     }
                     if ($operation['operation_type'] === 'withdraw') {
-                        if ($operationCounts[$userId] < 3) {
+                        if ($operationCounts[$userId] <= 3) {
                             if ($weeklyTotals[$userId] + $amountInEur <= $this->freeLimit) {
                                 $commission = 0;
                             } else {

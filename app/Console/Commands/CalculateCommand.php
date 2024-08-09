@@ -48,12 +48,14 @@ class CalculateCommand extends Command
 
 
         if (file_exists($filename)) {
-            $header = [  'date' ,
+            $header = [
+                'date',
                 'user_id',
-                'user_type' ,
-                'operation_type' ,
+                'user_type',
+                'operation_type',
                 'amount',
-                'currency'];
+                'currency'
+            ];
             $csv = Reader::createFromPath($filename);
             $csv->setHeaderOffset(null);
             $records = $csv->getRecords();
